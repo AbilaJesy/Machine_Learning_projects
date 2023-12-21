@@ -1,6 +1,6 @@
-import json
-import pickle
 
+import pickle
+import json
 from flask import Flask,request,app,jsonify,url_for,render_template
 import numpy as np
 import pandas as pd
@@ -9,6 +9,7 @@ app=Flask(__name__)
 ## Load the model
 regmodel=pickle.load(open('Randomforestmodel_cardA80.pkl','rb'))
 scalar=pickle.load(open('scaling.pkl','rb'))
+
 @app.route('/')
 def home():
     return render_template('home.html')
@@ -22,14 +23,16 @@ def predict_api():
     output=regmodel.predict(new_data)
     print(output[0])
     return jsonify(output[0])
+    
 
 @app.route('/predict',methods=['POST'])
 def predict():
     data=[float(x) for x in request.form.values()]
     final_input=scalar.transform(np.array(data).reshape(1,-1))
     print(final_input)
+    mylist=['fraud','Not fraud']
     output=regmodel.predict(final_input)[0]
-    return render_template("home.html",prediction_text="The prediction Class is {}".format(output))
+    return render_template("home.html",prediction_text="The prediction class is {}".format(output))
 
 
 
